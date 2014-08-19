@@ -9,6 +9,7 @@ coinbase/models/__init__.py
 coinbase/models/amount.py
 coinbase/models/contact.py
 coinbase/models/error.py
+coinbase/models/request.py
 coinbase/models/transaction.py
 coinbase/models/transfer.py
 coinbase/models/user.py

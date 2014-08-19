@@ -1,4 +1,8 @@
-__author__ = 'kroberts'
+# ----- Author ---------------------------------------------------------------
+
+__author__ = 'mcmontero'
+
+# ----- Public Classes --------------------------------------------------------
 
 class CoinbaseError(Exception):
 
