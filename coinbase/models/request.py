@@ -23,6 +23,7 @@ class CoinbaseOAuth2Request(object):
     def __init__(self, access_token, refresh_token):
         self.access_token = access_token
         self.refresh_token = refresh_token
+        self.token_was_refreshed = False
 
 
     def get(self, url, params=None):
@@ -34,6 +35,7 @@ class CoinbaseOAuth2Request(object):
 
         params['access_token'] = self.access_token
 
+        for i in range(1..3):
         return self.__handle_coinbase_error(
                 session.get(url, params=params)
                     .json())

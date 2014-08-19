@@ -47,9 +47,6 @@ from coinbase.models import CoinbaseRESTRequest
 from coinbase.models import CoinbaseTransaction
 from coinbase.models import CoinbaseTransfer
 from coinbase.models import CoinbaseUser
-from oauth2client.client import AccessTokenCredentialsError
-from oauth2client.client import AccessTokenRefreshError
-from oauth2client.client import OAuth2Credentials
 
 # ----- Public Classes --------------------------------------------------------
 
