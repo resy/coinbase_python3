@@ -1,7 +1,7 @@
 __author__ = 'gsibble'
 
-from amount import CoinbaseAmount
-from contact import CoinbaseContact
+from .amount import CoinbaseAmount
+from .contact import CoinbaseContact
 
 class CoinbaseTransaction(object):
 

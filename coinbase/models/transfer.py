@@ -1,6 +1,6 @@
 __author__ = 'pmb6tz'
 
-from amount import CoinbaseAmount
+from .amount import CoinbaseAmount
 
 class CoinbaseTransfer(object):
 
