@@ -21,10 +21,10 @@ with the existing library.
 Noteworthy Changes
 ==================
 
-o Authoring and license authoring has changed where significant refactoring has
-  occurred.  We will continue to maintain a MIT license.
-o REST API support now requires an API key and secret as the simple API key
-  method has been deprecated.
+    o Authoring and license authoring has changed where significant refactoring
+      has occurred.  We will continue to maintain a MIT license.
+    o REST API support now requires an API key and secret as the simple API key
+      method has been deprecated.
 
 Unofficial Coinbase Python Library
 ==================================
