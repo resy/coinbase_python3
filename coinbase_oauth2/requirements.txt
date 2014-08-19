@@ -1,0 +1,8 @@
+Flask==0.9
+Jinja2==2.6
+Pygments==1.6
+Werkzeug==0.8.3
+httplib2==0.8
+oauth2client==1.1
+requests==1.2.0
+wsgiref==0.1.2
