@@ -11,7 +11,7 @@ peers to an extremely high but attainable standard for work product (code).
 They ship constantly but never sacrifice code quality to meet a deadline.
 
 The Resy application runs at AWS using python3, uWSGI, nginx, MySQL and
-<a href="https://github.com/mcmontero/tinyAPI" tager="_new">tinyAPI</a>.
+<a href="https://github.com/mcmontero/tinyAPI" target="_new">tinyAPI</a>.
 
 If you're interested in working with us, please email jobs@resy.com.
 
