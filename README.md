@@ -1,14 +1,30 @@
-Unofficial Unofficial Coinbase Python3 Library
-==============================================
+Unofficial Coinbase Python3 Library
+===================================
 
-This is a simple port to python3 based on the original work of:
+This library was initially based on the python2 version provided by:
 
     https://github.com/sibblegp
+
+It is being developed by and deployed into production for Resy
+(https://github.com/resy).  It will continue to undergo significant
+refactoring as need be and by request.
 
 You can get a python3 compatible version of oauth2client, required for this
 library, here:
 
     https://github.com/pferate/oauth2client/tree/python3
+
+The original documentation from sibblegp's version will remain intact for
+as long as it is relevant and for the purposes of demonstrating compatibility
+with the existing library.
+
+Noteworthy Changes
+==================
+
+o Authoring and license authoring has changed where significant refactoring has
+  occurred.  We will continue to maintain a MIT license.
+o REST API support now requires an API key and secret as the simple API key
+  method has been deprecated.
 
 Unofficial Coinbase Python Library
 ==================================
