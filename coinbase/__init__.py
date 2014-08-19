@@ -34,13 +34,14 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 # ----- Author ---------------------------------------------------------------
 
-__author__ = 'mcmontero'
+__author__ = 'Michael Montero <mike@resy.com>'
 
 # ----- Imports --------------------------------------------------------------
 
 from coinbase.config import COINBASE_ENDPOINT
 from coinbase.models import CoinbaseAmount
 from coinbase.models import CoinbaseError
+from coinbase.models import CoinbaseOAuth2Request
 from coinbase.models import CoinbasePaymentButton
 from coinbase.models import CoinbaseRESTRequest
 from coinbase.models import CoinbaseTransaction
@@ -50,9 +51,6 @@ from oauth2client.client import AccessTokenCredentialsError
 from oauth2client.client import AccessTokenRefreshError
 from oauth2client.client import OAuth2Credentials
 
-import httplib2
-import os
-
 # ----- Public Classes --------------------------------------------------------
 
 class CoinbaseAccount(object):
@@ -61,102 +59,41 @@ class CoinbaseAccount(object):
     '''
 
     def __init__(self,
-                 oauth2_credentials=None,
+                 access_token = None,
+                 refresh_token = None,
                  api_key=None,
                  api_secret=None):
         '''
-        You must provide either oauth2_credentials or api_key and api_secret.
+        You must provide either access_token and refresh_token or api_key and
+        api_secret.
         '''
 
-        if oauth2_credentials:
+        self.use_oauth2 = False
+        if access_token and refresh_token:
+            if type(access_token) is str:
+                self.access_token = access_token
+            else:
+                raise RuntimeError('access_token must be a string.')
 
-            #CA Cert Path
-            ca_directory = os.path.abspath(__file__).split('/')[0:-1]
+            if type(refresh_token) is str:
+                self.refresh_token = refresh_token
+            else:
+                raise RuntimeError('refresh_token must be a string.')
 
-            ca_path = '/'.join(ca_directory) + '/ca_certs.txt'
-
-            #Set CA certificates (breaks without them)
-            self.http = httplib2.Http(ca_certs=ca_path)
-
-            #Create our credentials from the JSON sent
-            self.oauth2_credentials = \
-                OAuth2Credentials.from_json(oauth2_credentials)
-
-            #Check our token
-            self.token_expired = False
-            try:
-                self._check_oauth_expired()
-            except AccessTokenCredentialsError:
-                self.token_expired = True
-
-            #Apply our oAuth credentials to the session
-            self.oauth2_credentials.apply(headers=self.session.headers)
-
+            self.use_oauth2 = True
         elif api_key and api_secret:
             if type(api_key) is str:
                 self.api_key = api_key
             else:
-                raise RuntimeError('Your api_key must be a string.')
+                raise RuntimeError('api_key must be a string.')
 
             if type(api_secret) is str:
                 self.api_secret = api_secret
             else:
-                raise RuntimeError('Your api_secret must be a string.')
+                raise RuntimeError('api_secret must be a string.')
         else:
-            raise RuntimeError('You must pass either an api_key and api_secret '
-                               + 'or oauth_credentials.')
-
-
-    def _check_oauth_expired(self):
-        """
-        Internal function to check if the oauth2 credentials are expired
-        """
-
-        #Check if they are expired
-        if self.oauth2_credentials.access_token_expired:
-
-            #Print an notification message if they are
-            print('oAuth2 Token Expired')
-
-            #Raise the appropriate error
-            raise AccessTokenCredentialsError
-
-
-    def refresh_oauth(self):
-        """
-        Refresh our oauth2 token
-        :return: JSON representation of oauth token
-        :raise: AccessTokenRefreshError if there was an error refreshing the
-                token
-        """
-
-        #See if we can refresh the token
-        try:
-            #Ask to refresh the token
-            self.oauth2_credentials.refresh(http=self.http)
-
-            #We were successful
-
-            #Return the token for storage
-            return self.oauth2_credentials
-
-        #If the refresh token was invalid
-        except AccessTokenRefreshError:
-
-            #Print a warning
-            print('Your refresh token is invalid')
-
-            #Raise the appropriate error
-            raise AccessTokenRefreshError
-
-
-    def _prepare_request(self):
-        """
-        Prepare our request in various ways
-        """
-
-        #Check if the oauth token is expired and refresh it if necessary
-        self._check_oauth_expired()
+            raise RuntimeError('Either provide access_token and refresh_token '
+                               + 'or api_key and api_secret.')
 
 
     @property
@@ -166,60 +103,8 @@ class CoinbaseAccount(object):
         '''
 
         results = \
-            CoinbaseRESTRequest(self.api_key, self.api_secret) \
-                .get(COINBASE_ENDPOINT + '/account/balance')
-
-        return CoinbaseAmount(results['amount'], results['currency'])
-
-
-    @property
-    def receive_address(self):
-        '''
-        Retrieves the accounts's current receive address.
-        '''
-
-        results = \
-            CoinbaseRESTRequest(self.api_key, self.api_secret) \
-                .get(COINBASE_ENDPOINT + '/account/receive_address')
-
-        return results['address']
-
-
-    @property
-    def contacts(self):
-        '''
-        Retrieves the account's contacts.
-        '''
-
-        results = \
-            CoinbaseRESTRequest(self.api_key, self.api_secret) \
-                .get(COINBASE_ENDPOINT + '/contacts')
-
-        return [contact['contact'] for contact in results['contacts']]
-
-
-    def buy_price(self, qty=1):
-        '''
-        Retrieves the buy price for BitCoin in USD.
-        '''
-
-        results = \
-            CoinbaseRESTRequest(self.api_key, self.api_secret) \
-                .get(COINBASE_ENDPOINT + '/prices/buy',
-                     {'qty': qty})
-
-        return CoinbaseAmount(results['amount'], results['currency'])
-
-
-    def sell_price(self, qty=1):
-        '''
-        Retrieves the sell price of BitCoin in USD.
-        '''
-
-        results = \
-            CoinbaseRESTRequest(self.api_key, self.api_secret) \
-                .get(COINBASE_ENDPOINT + '/prices/sell',
-                     {'qty': qty})
+            self.__execute_get_request(
+                COINBASE_ENDPOINT + '/account/balance')
 
         return CoinbaseAmount(results['amount'], results['currency'])
 
@@ -230,131 +115,110 @@ class CoinbaseAccount(object):
         '''
 
         results = \
-            CoinbaseRESTRequest(self.api_key, self.api_secret) \
-                .post(COINBASE_ENDPOINT + '/buys',
-                      {'qty': qty,
-                       'agree_btc_amount_varies': pricevaries})
+            self.__execute_post_request(
+                COINBASE_ENDPOINT + '/buys',
+                {'qty': qty,
+                 'agree_btc_amount_varies': pricevaries})
 
         return CoinbaseTransfer(results['transfer'])
 
 
-    def sell_btc(self, qty):
+    def buy_price(self, qty=1):
         '''
-        Sells BitCoin to Coinbase for USD.
+        Retrieves the buy price for BitCoin in USD.
         '''
 
         results = \
-            CoinbaseRESTRequest(self.api_key, self.api_secret) \
-                .post(COINBASE_ENDPOINT + '/sells',
-                      {'qty': qty})
+            self.__execute_get_request(
+                COINBASE_ENDPOINT + '/prices/buy',
+                {'qty': qty})
 
-        return CoinbaseTransfer(results['transfer'])
+        return CoinbaseAmount(results['amount'], results['currency'])
 
 
-    def request(self, from_email, amount, notes='', currency='BTC'):
+    @property
+    def contacts(self):
         '''
-        Requests that BitCoin be delivered to this account from an email
-        address.
+        Retrieves the account's contacts.
         '''
 
-        if currency == 'BTC':
-            params = {
-                "transaction": {
-                    "from": from_email,
-                    "amount": amount,
-                    "notes": notes
-                }
+        results = \
+            self.__execute_get_request(
+                COINBASE_ENDPOINT + '/contacts')
+
+        return [contact['contact'] for contact in results['contacts']]
+
+
+    def create_button(self,
+                      name,
+                      price,
+                      price_currency='BTC',
+                      button_type='buy_now',
+                      callback_url=None,
+                      **kwargs):
+        '''
+        Creates a new payment button, page, or iframe.
+        '''
+
+        params = {
+            "button": {
+                "name": name,
+                "price_string": str(price),
+                "price_currency_iso": price_currency,
+                "button_type": button_type
             }
+        }
+
+        if callback_url is not None:
+            params['button']['callback_url'] = callback_url
+
+        params['button'].update(kwargs)
+
+        results = \
+            self.__execute_post_request(
+                COINBASE_ENDPOINT + '/buttons',
+                params)
+
+        return CoinbasePaymentButton(results['button'])
+
+
+    def __execute_get_request(self, url, params=None):
+        if self.use_oauth2:
+            return \
+                CoinbaseOAuth2Request(
+                    self.access_token, self.refresh_token) \
+                        .get(url, params)
         else:
-            params = {
-                "transaction": {
-                    "from": from_email,
-                    "amount_string": str(amount),
-                    "amount_currency_iso": currency,
-                    "notes": notes
-                }
-            }
-
-        results = \
-            CoinbaseRESTRequest(self.api_key, self.api_secret) \
-                .post(COINBASE_ENDPOINT + '/transactions/request_money',
-                      params)
-
-        return CoinbaseTransaction(results['transaction'])
+            return \
+                CoinbaseRESTRequest(
+                    self.api_key, self.api_secret) \
+                        .get(url, params)
 
 
-    def send(self, to_address, amount, notes='', currency='BTC'):
-        '''
-        Sends BitCoin from this account to an email address or a BTC address.
-        '''
-
-        if currency == 'BTC':
-            params = {
-                "transaction": {
-                    "to": to_address,
-                    "amount": amount,
-                    "notes": notes
-                }
-            }
+    def __execute_post_request(self, url, params=None):
+        if self.use_oauth2:
+            return \
+                CoinbaseOAuth2Request(
+                    self.access_token, self.refresh_token) \
+                        .post(url, params)
         else:
-            params = {
-                "transaction": {
-                    "to": to_address,
-                    "amount_string": str(amount),
-                    "amount_currency_iso": currency,
-                    "notes": notes
-                }
-            }
+            return \
+                CoinbaseRESTRequest(
+                    self.api_key, self.api_secret) \
+                        .post(url, params)
+
+
+    def generate_receive_address(self, callback_url=None):
+        '''
+        Generates a new receive address.
+        '''
 
         results = \
-            CoinbaseRESTRequest(self.api_key, self.api_secret) \
-                .post(COINBASE_ENDPOINT + '/transactions/send_money',
-                      params)
+            self.__execute_post_request(
+                COINBASE_ENDPOINT + '/account/generate_receive_address',
+                {'address': {'callback_url': callback_url}})
 
-        return CoinbaseTransaction(results['transaction'])
-
-
-    def transactions(self, count=30):
-        '''
-        Retrieves the list of transactions for this account.
-        '''
-
-        transactions = []
-        for page in range(1, int(count / 30 + 1) + 1):
-            results = \
-                CoinbaseRESTRequest(self.api_key, self.api_secret) \
-                    .get(COINBASE_ENDPOINT + '/transactions',
-                         {'page': page})
-
-            for transaction in results['transactions']:
-                transactions.append(
-                    CoinbaseTransaction(transaction['transaction']))
-
-            if results['num_pages'] == page:
-                break
-
-        return transactions
-
-
-    def transfers(self, count=30):
-        '''
-        Retrieves the list of transfers for this account.
-        '''
-
-        transfers = []
-        for page in range(1, int(count / 30 + 1) + 1):
-            results = \
-                CoinbaseRESTRequest(self.api_key, self.api_secret) \
-                    .get(COINBASE_ENDPOINT + '/transfers',
-                         {'page': page})
-
-            for transfer in results['transfers']:
-                transfers.append(CoinbaseTransfer(transfer['transfer']))
-
-            if results['num_pages'] == page:
-                break
-
-        return transfers
+        return results['address']
 
 
     def get_transaction(self, transaction_id):
@@ -363,8 +227,8 @@ class CoinbaseAccount(object):
         '''
 
         results = \
-            CoinbaseRESTRequest(self.api_key, self.api_secret) \
-                .get(COINBASE_ENDPOINT + '/transactions/' + str(transaction_id))
+            self.__execute_get_request(
+                COINBASE_ENDPOINT + '/transactions/' + str(transaction_id))
 
         return CoinbaseTransaction(results['transaction'])
 
@@ -375,8 +239,8 @@ class CoinbaseAccount(object):
         '''
 
         results = \
-            CoinbaseRESTRequest(self.api_key, self.api_secret) \
-                .get(COINBASE_ENDPOINT + '/users')
+            self.__execute_get_request(
+                COINBASE_ENDPOINT + '/users')
 
         user_details = results['users'][0]['user']
 
@@ -409,46 +273,146 @@ class CoinbaseAccount(object):
         return user
 
 
-    def generate_receive_address(self, callback_url=None):
+    @property
+    def receive_address(self):
         '''
-        Generates a new receive address.
+        Retrieves the accounts's current receive address.
         '''
 
         results = \
-            CoinbaseRESTRequest(self.api_key, self.api_secret) \
-                .post(COINBASE_ENDPOINT + '/account/generate_receive_address',
-                      {'address': {'callback_url': callback_url}})
+            self.__execute_get_request(
+                COINBASE_ENDPOINT + '/account/receive_address')
 
         return results['address']
 
 
-    def create_button(self,
-                      name,
-                      price,
-                      price_currency='BTC',
-                      button_type='buy_now',
-                      callback_url=None,
-                      **kwargs):
+    def request(self, from_email, amount, notes='', currency='BTC'):
         '''
-        Creates a new payment button, page, or iframe.
+        Requests that BitCoin be delivered to this account from an email
+        address.
         '''
 
-        params = {
-            "button": {
-                "name": name,
-                "price_string": str(price),
-                "price_currency_iso": price_currency,
-                "button_type": button_type
+        if currency == 'BTC':
+            params = {
+                "transaction": {
+                    "from": from_email,
+                    "amount": amount,
+                    "notes": notes
+                }
             }
-        }
-
-        if callback_url is not None:
-            params['button']['callback_url'] = callback_url
-
-        params['button'].update(kwargs)
+        else:
+            params = {
+                "transaction": {
+                    "from": from_email,
+                    "amount_string": str(amount),
+                    "amount_currency_iso": currency,
+                    "notes": notes
+                }
+            }
 
         results = \
-            CoinbaseRESTRequest(self.api_key, self.api_secret) \
-                .post(COINBASE_ENDPOINT + '/buttons', params)
+            self.__execute_post_request(
+                COINBASE_ENDPOINT + '/transactions/request_money',
+                params)
 
-        return CoinbasePaymentButton(results['button'])
+        return CoinbaseTransaction(results['transaction'])
+
+
+    def sell_btc(self, qty):
+        '''
+        Sells BitCoin to Coinbase for USD.
+        '''
+
+        results = \
+            self.__execute_post_request(
+                COINBASE_ENDPOINT + '/sells',
+                {'qty': qty})
+
+        return CoinbaseTransfer(results['transfer'])
+
+
+    def sell_price(self, qty=1):
+        '''
+        Retrieves the sell price of BitCoin in USD.
+        '''
+
+        results = \
+            self.__execute_get_request(
+                COINBASE_ENDPOINT + '/prices/sell',
+                {'qty': qty})
+
+        return CoinbaseAmount(results['amount'], results['currency'])
+
+
+    def send(self, to_address, amount, notes='', currency='BTC'):
+        '''
+        Sends BitCoin from this account to an email address or a BTC address.
+        '''
+
+        if currency == 'BTC':
+            params = {
+                "transaction": {
+                    "to": to_address,
+                    "amount": amount,
+                    "notes": notes
+                }
+            }
+        else:
+            params = {
+                "transaction": {
+                    "to": to_address,
+                    "amount_string": str(amount),
+                    "amount_currency_iso": currency,
+                    "notes": notes
+                }
+            }
+
+        results = \
+            self.__execute_post_request(
+                COINBASE_ENDPOINT + '/transactions/send_money',
+                params)
+
+        return CoinbaseTransaction(results['transaction'])
+
+
+    def transactions(self, count=30):
+        '''
+        Retrieves the list of transactions for this account.
+        '''
+
+        transactions = []
+        for page in range(1, int(count / 30 + 1) + 1):
+            results = \
+                self.__execute_get_request(
+                    COINBASE_ENDPOINT + '/transactions',
+                    {'page': page})
+
+            for transaction in results['transactions']:
+                transactions.append(
+                    CoinbaseTransaction(transaction['transaction']))
+
+            if results['num_pages'] == page:
+                break
+
+        return transactions
+
+
+    def transfers(self, count=30):
+        '''
+        Retrieves the list of transfers for this account.
+        '''
+
+        transfers = []
+        for page in range(1, int(count / 30 + 1) + 1):
+            results = \
+                self.__execute_get_request(
+                    COINBASE_ENDPOINT + '/transfers',
+                    {'page': page})
+
+            for transfer in results['transfers']:
+                transfers.append(CoinbaseTransfer(transfer['transfer']))
+
+            if results['num_pages'] == page:
+                break
+
+        return transfers
