@@ -1,5 +1,13 @@
 # Unofficial Coinbase Python3 Library
 
+## About Resy
+
+Resy is a mobile restaurant reservations app in beta on iOS and Android.
+The app is for people who love eating at great restaurants but hate hassling
+for reservations.
+
+If you're interested in working with us, please email jobs@resy.com.
+
 ## Credits
 
 - Michael Montero &lt;mike@resy.com&gt;
