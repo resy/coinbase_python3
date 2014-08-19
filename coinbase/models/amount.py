@@ -1,4 +1,8 @@
-__author__ = 'gsibble'
+# ----- Author ----------------------------------------------------------------
+
+__author__ = 'Michael Montero <mike@resy.com>'
+
+# ----- Public Classes --------------------------------------------------------
 
 class CoinbaseAmount(float):
 

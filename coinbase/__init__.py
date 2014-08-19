@@ -1,4 +1,4 @@
-# ----- License --------------------------------------------------------------
+# ----- License ---------------------------------------------------------------
 
 """
 Coinbase Python3 Client Library
@@ -32,13 +32,12 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 """
 
-# ----- Author ---------------------------------------------------------------
+# ----- Author ----------------------------------------------------------------
 
 __author__ = 'Michael Montero <mike@resy.com>'
 
-# ----- Imports --------------------------------------------------------------
+# ----- Imports ---------------------------------------------------------------
 
-from coinbase.config import COINBASE_ENDPOINT
 from coinbase.models import CoinbaseAmount
 from coinbase.models import CoinbaseError
 from coinbase.models import CoinbaseOAuth2Request
@@ -54,6 +53,8 @@ class CoinbaseAccount(object):
     '''
     Manages data and interactions for a Coinbase account.
     '''
+
+    COINBASE_API = 'https://coinbase.com/api/v1'
 
     def __init__(self,
                  access_token = None,
@@ -101,21 +102,21 @@ class CoinbaseAccount(object):
 
         results = \
             self.__execute_get_request(
-                COINBASE_ENDPOINT + '/account/balance')
+                self.COINBASE_API + '/account/balance')
 
         return CoinbaseAmount(results['amount'], results['currency'])
 
 
-    def buy_btc(self, qty, pricevaries=False):
+    def buy_btc(self, qty, price_varies=False):
         '''
         Purchases BitCoin from Coinbase in USD.
         '''
 
         results = \
             self.__execute_post_request(
-                COINBASE_ENDPOINT + '/buys',
+                self.COINBASE_API + '/buys',
                 {'qty': qty,
-                 'agree_btc_amount_varies': pricevaries})
+                 'agree_btc_amount_varies': price_varies})
 
         return CoinbaseTransfer(results['transfer'])
 
@@ -127,7 +128,7 @@ class CoinbaseAccount(object):
 
         results = \
             self.__execute_get_request(
-                COINBASE_ENDPOINT + '/prices/buy',
+                self.COINBASE_API + '/prices/buy',
                 {'qty': qty})
 
         return CoinbaseAmount(results['amount'], results['currency'])
@@ -141,7 +142,7 @@ class CoinbaseAccount(object):
 
         results = \
             self.__execute_get_request(
-                COINBASE_ENDPOINT + '/contacts')
+                self.COINBASE_API + '/contacts')
 
         return [contact['contact'] for contact in results['contacts']]
 
@@ -173,7 +174,7 @@ class CoinbaseAccount(object):
 
         results = \
             self.__execute_post_request(
-                COINBASE_ENDPOINT + '/buttons',
+                self.COINBASE_API + '/buttons',
                 params)
 
         return CoinbasePaymentButton(results['button'])
@@ -212,7 +213,7 @@ class CoinbaseAccount(object):
 
         results = \
             self.__execute_post_request(
-                COINBASE_ENDPOINT + '/account/generate_receive_address',
+                self.COINBASE_API + '/account/generate_receive_address',
                 {'address': {'callback_url': callback_url}})
 
         return results['address']
@@ -225,7 +226,7 @@ class CoinbaseAccount(object):
 
         results = \
             self.__execute_get_request(
-                COINBASE_ENDPOINT + '/transactions/' + str(transaction_id))
+                self.COINBASE_API + '/transactions/' + str(transaction_id))
 
         return CoinbaseTransaction(results['transaction'])
 
@@ -237,7 +238,7 @@ class CoinbaseAccount(object):
 
         results = \
             self.__execute_get_request(
-                COINBASE_ENDPOINT + '/users')
+                self.COINBASE_API + '/users')
 
         user_details = results['users'][0]['user']
 
@@ -278,7 +279,7 @@ class CoinbaseAccount(object):
 
         results = \
             self.__execute_get_request(
-                COINBASE_ENDPOINT + '/account/receive_address')
+                self.COINBASE_API + '/account/receive_address')
 
         return results['address']
 
@@ -309,7 +310,7 @@ class CoinbaseAccount(object):
 
         results = \
             self.__execute_post_request(
-                COINBASE_ENDPOINT + '/transactions/request_money',
+                self.COINBASE_API + '/transactions/request_money',
                 params)
 
         return CoinbaseTransaction(results['transaction'])
@@ -322,7 +323,7 @@ class CoinbaseAccount(object):
 
         results = \
             self.__execute_post_request(
-                COINBASE_ENDPOINT + '/sells',
+                self.COINBASE_API + '/sells',
                 {'qty': qty})
 
         return CoinbaseTransfer(results['transfer'])
@@ -335,7 +336,7 @@ class CoinbaseAccount(object):
 
         results = \
             self.__execute_get_request(
-                COINBASE_ENDPOINT + '/prices/sell',
+                self.COINBASE_API + '/prices/sell',
                 {'qty': qty})
 
         return CoinbaseAmount(results['amount'], results['currency'])
@@ -366,7 +367,7 @@ class CoinbaseAccount(object):
 
         results = \
             self.__execute_post_request(
-                COINBASE_ENDPOINT + '/transactions/send_money',
+                self.COINBASE_API + '/transactions/send_money',
                 params)
 
         return CoinbaseTransaction(results['transaction'])
@@ -381,7 +382,7 @@ class CoinbaseAccount(object):
         for page in range(1, int(count / 30 + 1) + 1):
             results = \
                 self.__execute_get_request(
-                    COINBASE_ENDPOINT + '/transactions',
+                    self.COINBASE_API + '/transactions',
                     {'page': page})
 
             for transaction in results['transactions']:
@@ -403,7 +404,7 @@ class CoinbaseAccount(object):
         for page in range(1, int(count / 30 + 1) + 1):
             results = \
                 self.__execute_get_request(
-                    COINBASE_ENDPOINT + '/transfers',
+                    self.COINBASE_API + '/transfers',
                     {'page': page})
 
             for transfer in results['transfers']:

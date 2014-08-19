@@ -6,5 +6,5 @@ __author__ = 'Michael Montero <mike@resy.com>'
 
 class CoinbaseError(Exception):
 
-    def __init__(self, errorList):
-        self.error = errorList
+    def __init__(self, error):
+        self.error = error

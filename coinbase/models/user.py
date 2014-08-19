@@ -1,4 +1,8 @@
-__author__ = 'gsibble'
+# ----- Author ----------------------------------------------------------------
+
+__author__ = 'Michael Montero <mike@resy.com>'
+
+# ----- Public Classes --------------------------------------------------------
 
 class CoinbaseUser(object):
 
@@ -13,7 +17,6 @@ class CoinbaseUser(object):
                  sell_level,
                  buy_limit,
                  sell_limit):
-
         self.id = user_id
         self.name = name
         self.email = email

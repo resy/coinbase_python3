@@ -15,7 +15,30 @@ import urllib.parse
 
 # ----- Public Classes --------------------------------------------------------
 
-class CoinbaseOAuth2Request(object):
+class CoinbaseBaseRequest(object):
+    '''
+    Base class for request handlers.
+    '''
+
+    def _handle_coinbase_errors(self, request):
+        if request.status_code != 200 and request.status_code != 201:
+            content = request.content.decode()
+
+            raise CoinbaseError(
+                '(' + str(request.status_code) + '): '
+                + ('N/A' if len(content) == 0 or content == ' ' else content))
+
+        response = json.loads(request.content.decode())
+
+        if 'error' in response:
+            raise CoinbaseError(response['error'])
+        elif 'success' in response and response['success'] == False:
+            raise CoinbaseError(response['errors'][0])
+
+        return response
+
+
+class CoinbaseOAuth2Request(CoinbaseBaseRequest):
     '''
     Simplify API requests being made with OAuth2 credentials.
     '''
@@ -27,44 +50,24 @@ class CoinbaseOAuth2Request(object):
 
 
     def get(self, url, params=None):
-        session = requests.session()
-        session.headers.update({'Content-Type': 'application/json'})
-
         if params is None:
             params = {}
 
         params['access_token'] = self.access_token
 
-        for i in range(1..3):
-        return self.__handle_coinbase_error(
-                session.get(url, params=params)
-                    .json())
-
-
-    def __handle_coinbase_error(self, response):
-        if 'error' in response:
-            raise CoinbaseError(response['error'])
-        elif 'success' in response and response['success'] == False:
-            raise CoinbaseError(response['errors'])
-
-        return response
+        return self._handle_coinbase_errors(requests.get(url, params=params))
 
 
     def post(self, url, params=None):
-        session = requests.session()
-        session.headers.update({'Content-Type': 'application/json'})
-
         if params is None:
             params = {}
 
         params['access_token'] = self.access_token
 
-        return self.__handle_coinbase_error(
-                session.post(url, data=json.dumps(params))
-                    .json())
+        return self._handle_coinbase_errors(requests.post(url, data=params))
 
 
-class CoinbaseRESTRequest(object):
+class CoinbaseRESTRequest(CoinbaseBaseRequest):
     '''
     Simplify API requests being made with an API key and secret.
     '''
@@ -75,25 +78,21 @@ class CoinbaseRESTRequest(object):
 
 
     def get(self, url, params=None):
-        session = requests.session()
-        session.headers.update({'Content-Type': 'application/json'})
-
         query_string = ''
         if params is not None:
             query_string = '?' + urllib.parse.urlencode(params)
 
         nonce, signature = self.__get_nonce_and_signature(url + query_string)
 
-        session.headers.update({
+        headers = {
             'ACCESS_KEY': self.api_key,
             'ACCESS_SIGNATURE': signature,
             'ACCESS_NONCE': nonce,
             'Accept': 'application/json'
-        })
+        }
 
-        return self.__handle_coinbase_error(
-                session.get(url, params=params)
-                    .json())
+        return self._handle_coinbase_errors(
+                requests.get(url, params=params, headers=headers))
 
 
     def __get_nonce_and_signature(self, message):
@@ -111,32 +110,19 @@ class CoinbaseRESTRequest(object):
         return nonce, signature
 
 
-    def __handle_coinbase_error(self, response):
-        if 'error' in response:
-            raise CoinbaseError(response['error'])
-        elif 'success' in response and response['success'] == False:
-            raise CoinbaseError(response['errors'])
-
-        return response
-
-
     def post(self, url, params=None):
-        session = requests.session()
-        session.headers.update({'Content-Type': 'application/json'})
-
         body = ''
         if params is not None:
-            body = json.dumps(params)
+            body = urllib.parse.urlencode(params)
 
         nonce, signature = self.__get_nonce_and_signature(url + body)
 
-        session.headers.update({
+        headers = {
             'ACCESS_KEY': self.api_key,
             'ACCESS_SIGNATURE': signature,
             'ACCESS_NONCE': nonce,
             'Accept': 'application/json'
-        })
+        }
 
-        return self.__handle_coinbase_error(
-                session.post(url, data=json.dumps(params))
-                    .json())
+        return self._handle_coinbase_errors(
+                requests.post(url, data=params, headers=headers))
