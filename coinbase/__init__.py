@@ -171,6 +171,9 @@ class CoinbaseAccount(object):
         url = COINBASE_ENDPOINT + '/account/balance'
         response = self.session.get(url, params=self.global_request_params)
         results = response.json()
+        if 'error' in results:
+            raise CoinbaseError(results['error'])
+
         return CoinbaseAmount(results['amount'], results['currency'])
 
     @property
@@ -233,8 +236,6 @@ class CoinbaseAccount(object):
                 transaction should be processed if Coinbase cannot guarantee
                 the current price.
         :return: CoinbaseTransfer with all transfer details on success or
-                CoinbaseError with the error list received from Coinbase on
-                failure
         """
         url = COINBASE_ENDPOINT + '/buys'
         request_data = {
@@ -245,7 +246,7 @@ class CoinbaseAccount(object):
                                      params=self.global_request_params)
         response_parsed = response.json()
         if response_parsed['success'] == False:
-            return CoinbaseError(response_parsed['errors'])
+            raise CoinbaseError(response_parsed['errors'])
 
         return CoinbaseTransfer(response_parsed['transfer'])
 
@@ -255,8 +256,6 @@ class CoinbaseAccount(object):
         Sell BitCoin to Coinbase for USD
         :param qty: BitCoin quantity to be sold
         :return: CoinbaseTransfer with all transfer details on success or
-                 CoinbaseError with the error list received from Coinbase
-                 on failure
         """
         url = COINBASE_ENDPOINT + '/sells'
         request_data = {
@@ -266,7 +265,7 @@ class CoinbaseAccount(object):
                                      params=self.global_request_params)
         response_parsed = response.json()
         if response_parsed['success'] == False:
-            return CoinbaseError(response_parsed['errors'])
+            raise CoinbaseError(response_parsed['errors'])
 
         return CoinbaseTransfer(response_parsed['transfer'])
 
