@@ -6,6 +6,13 @@ Resy is a mobile restaurant reservations app in beta on iOS and Android.
 The app is for people who love eating at great restaurants but hate hassling
 for reservations.
 
+The developers behind Resy are craftspeople that hold themselves and their
+peers to an extremely high but attainable standard for work product (code).
+They ship constantly but never sacrifice code quality to meet a deadline.
+
+The Resy application runs at AWS using python3, uWSGI, nginx, MySQL and
+<a href="https://github.com/mcmontero/tinyAPI">tinyAPI</a>.
+
 If you're interested in working with us, please email jobs@resy.com.
 
 ## Installation
