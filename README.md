@@ -14,6 +14,7 @@ python3 setup.py install
 
 ## OAuth2 Usage
 
+```python
 import coinbase
 
 account = \
@@ -24,9 +25,11 @@ print(account.balance)
 
 if account.token_was_refreshed:
     # Update your data store with the new access_token and refresh_token.
+```
 
 ## API Key and Secret Usage
 
+```python
 import coinbase
 
 account = \
@@ -34,6 +37,7 @@ account = \
         api_key = '...',
         api_secret = '...')
 print(account.balance)
+```
 
 ## Credits
 
