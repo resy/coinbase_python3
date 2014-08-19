@@ -8,6 +8,33 @@ for reservations.
 
 If you're interested in working with us, please email jobs@resy.com.
 
+## Installation
+
+python3 setup.py install
+
+## OAuth2 Usage
+
+import coinbase
+
+account = \
+    coinbase.CoinbaseAccount(
+        access_token = '...',
+        refresh_token = '...')
+print(account.balance)
+
+if account.token_was_refreshed:
+    # Update your data store with the new access_token and refresh_token.
+
+## API Key and Secret Usage
+
+import coinbase
+
+account = \
+    coinbase.CoinbaseAccount(
+        api_key = '...',
+        api_secret = '...')
+print(account.balance)
+
 ## Credits
 
 - Michael Montero &lt;mike@resy.com&gt;
