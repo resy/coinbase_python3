@@ -7,7 +7,7 @@ from distutils.core import setup
 setup(
     name = 'coinbase',
     version = '0.3.0',
-    packages = ['coinbase', 'coinbase.models'],
+    packages = ['coinbase'],
     url = 'https://github.com/resy/coinbase_python3',
     license = 'MIT',
     author = 'Michael Montero',

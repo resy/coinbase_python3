@@ -4,8 +4,10 @@ __author__ = 'Michael Montero <mike@resy.com>'
 
 # ----- Public Classes --------------------------------------------------------
 
-class CoinbasePaymentButton(object):
+class CoinbaseAuthentication(object):
+    '''
+    Base class for API authentication mechanisms.
+    '''
 
-    def __init__(self, data):
-        for key, value in data.items():
-            setattr(self, key, value)
+    def get_data():
+        raise NotImplementedError
