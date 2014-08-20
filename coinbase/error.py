@@ -21,7 +21,3 @@ class CoinbaseException(Exception):
 
 class CoinbaseAPIException(CoinbaseException):
     pass
-
-
-class CoinbaseConnectionException(CoinbaseException):
-    pass
