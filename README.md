@@ -63,76 +63,76 @@ print(user['email'])
 
 ```python
 print(coinvase.get_balance() . ' BTC')
-// '200.123 BTC'
+# '200.123 BTC'
 ```
 
 ### Send bitcoin
 
 `def send_money(self, to, amount, notes=None, user_fee=None, amount_currency=None)`
 
-```php
-$response = $coinbase->sendMoney("user@example.com", "2");
-echo $response->success ? 'true' : 'false';
-// 'true'
-echo $response->transaction->status;
-// 'pending'
-echo $response->transaction->id;
-// '518d8567ed3ddcd4fd000034'
+```python
+response = coinbase.send_money('user@example.com', '2')
+print(response['success'])
+# True
+print(response['transaction']['status'])
+# 'pending'
+print(response['transaction']['id'])
+# '518d8567ed3ddcd4fd000034'
 ```
 
 The first parameter can also be a bitcoin address and the third parameter can be a note or description of the transaction.  Descriptions are only visible on Coinbase (not on the general bitcoin network).
 
-```php
-$response = $coinbase->sendMoney("mpJKwdmJKYjiyfNo26eRp4j6qGwuUUnw9x", "0.1", "thanks for the coffee!");
-echo $response->transaction->notes;
-// 'thanks for the coffee!'
+```python
+response = coinbase.send_money("mpJKwdmJKYjiyfNo26eRp4j6qGwuUUnw9x", "0.1", "thanks for the coffee!")
+print(response['transaction']['notes'])
+# 'thanks for the coffee!'
 ```
 
-You can also send money in a number of currencies (see `getCurrencies()`) using the fifth parameter.  The amount will be automatically converted to the correct BTC amount using the current exchange rate.
+You can also send money in a number of currencies (see `get_currencies()`) using the fifth parameter.  The amount will be automatically converted to the correct BTC amount using the current exchange rate.
 
-```php
-$response = $coinbase->sendMoney("user@example.com", "2", null, null, "CAD");
-echo $response->transaction->amount->amount;
-// '0.0169'
+```python
+response = coinbase.send_money("user@example.com", "2", amount_currency="CAD")
+print(response['transaction']['amount']['amount'])
+# '0.0169'
 ```
 
 ### Request bitcoin
 
 This will send an email to the recipient, requesting payment, and give them an easy way to pay.
 
-```php
-$response = $coinbase->requestMoney('client@example.com', 50, "contractor hours in January (website redesign for 50 BTC)");
-echo $response->transaction->request ? 'true' : 'false';
-// 'true'
-echo $response->transaction->id;
-// '501a3554f8182b2754000003'
+```python
+response = coinbase.request_money('client@example.com', 50, "contractor hours in January (website redesign for 50 BTC)")
+print(response['transaction']['request'])
+# True
+print(response['transaction']['id'])
+# '501a3554f8182b2754000003'
 
-$response = $coinbase->resendRequest('501a3554f8182b2754000003');
-echo $response->success ? 'true' : 'false';
-// 'true'
+response = coinbase.resend_request('501a3554f8182b2754000003)
+print(response['success'])
+# True
 
-$response = $coinbase->cancelRequest('501a3554f8182b2754000003');
-echo $response->success ? 'true' : 'false';
-// 'true'
+respoinse = coinbase.cancel_request('501a3554f8182b2754000003')
+print(response['success'])
+# True
 
 // From the other account:
-$response = $coinbase->completeRequest('501a3554f8182b2754000003');
-echo $response->success ? 'true' : 'false';
-// 'true'
+response = coinbase.complete_request('501a3554f8182b2754000003')
+print(response['success'])
+# True
 ```
 
 ### List your current transactions
 
-Sorted in descending order by timestamp, 30 per page.  You can pass an integer as the first param to page through results, for example `$coinbase->getTransactions(2)`.
+Sorted in descending order by timestamp, 30 per page.  You can pass an integer as the first parameter to page through results, for example `coinbase.get_transactions(2)`.
 
-```php
-$response = $coinbase->getTransactions();
-echo $response->current_page;
-// '1'
-echo $response->num_pages;
-// '2'
-echo $response->transactions[0]->id;
-// '5018f833f8182b129c00002f'
+```python
+response = coinbase.get_transactions()
+print(response['current_page'])
+# 1
+print(response['num_pages'])
+# 2
+print(response['transactions'][0]['id'])
+# '5018f833f8182b129c00002f'
 ```
 
 Transactions will always have an `id` attribute which is the primary way to identity them through the Coinbase api.  They will also have a `hsh` (bitcoin hash) attribute once they've been broadcast to the network (usually within a few seconds).
