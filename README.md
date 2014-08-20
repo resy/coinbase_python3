@@ -152,7 +152,7 @@ print(coinbase.get_sell_price(1)
 
 Buying and selling bitcoin requires you to [link and verify a bank account](https://coinbase.com/payment_methods) through the web interface first.
 
-Then you can call `buy` or `sell` and pass a `quantity` of bitcoin you want to buy.
+Then you can call `buy()` or `sell()` and pass a `quantity` of bitcoin you want to buy.
 
 On a buy, we'll debit your bank account and the bitcoin will arrive in your Coinbase account four business days later (this is shown as the `payout_date` below).  This is how long it takes for the bank transfer to complete and verify, although we're working on shortening this window. In some cases, we may not be able to guarantee a price, and buy requests will fail. In that case, set the second parameter (`agree_btc_amount_varies`) to true in order to purchase bitcoin at the future market price when your money arrives.
 
@@ -248,7 +248,7 @@ print(', '.join(response['contacts']))
 
 You can see a [list of method calls here](https://github.com/resy/coinbase_python3/blob/master/coinbase/__init__.py) and how they are implemented.  They are a wrapper around the [Coinbase JSON API](https://coinbase.com/api/doc).
 
-If there are any methods listed in the [API Reference](https://coinbase.com/api/doc) that don't have an explicit function name in the library, you can also call `get`, `post`, `put`, or `delete` with a `path` and optional `params` array for a quick implementation.  The raw JSON object will be returned. For example:
+If there are any methods listed in the [API Reference](https://coinbase.com/api/doc) that don't have an explicit function name in the library, you can also call `get()`, `post()`, `put()`, or `delete()` with a `path` and optional `params` array for a quick implementation.  The raw JSON object will be returned. For example:
 
 ```python
 print(coinbase.get('/account/balance'))
