@@ -268,6 +268,11 @@ class Coinbase(object):
         return self.__rpc.request('PUT', path, params)
 
 
+    def refund(self, transaction_id, refund_iso_code='BTC'):
+        return self.__post('/orders/' + str(transaction_id) + '/refund',
+                           {'order': {'refund_iso_code': refund_iso_code}})
+
+
     def request_money(self, from_, amount, notes, amount_currency):
         params = {
             'transaction': {
