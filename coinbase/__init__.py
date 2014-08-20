@@ -5,6 +5,7 @@ __author__ = 'Michael Montero <mike@resy.com>'
 # ----- Imports ---------------------------------------------------------------
 
 from .CoinbaseAPIKeyAuthentication import CoinbaseAPIKeyAuthentication
+from .CoinbaseOAuth import CoinbaseOAuth
 from .CoinbaseOAuthAuthentication import CoinbaseOAuthAuthentication
 from .CoinbaseRPC import CoinbaseRPC
 from .error import CoinbaseAPIException
