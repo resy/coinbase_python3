@@ -16,7 +16,7 @@ If you're interested in working with us, please email jobs@resy.com.
 
 ## Installation
 
-Obtain the latest version of the Coinbase PHP library with:
+Obtain the latest version of the Coinbase Python3 library with:
 
     git clone https://github.com/resy/coinbase_python3.git
 
@@ -28,7 +28,7 @@ Then, execute the following command:
 
 Start by [enabling an API Key on your account](https://coinbase.com/settings/api).
 
-Next, create an instance of the client using the `Coinbase.with_api_key` method:
+Next, create an instance of the client using the `Coinbase.with_api_key()` method:
 
 ```python
 import coinbase
@@ -115,7 +115,7 @@ respoinse = coinbase.cancel_request('501a3554f8182b2754000003')
 print(response['success'])
 # True
 
-// From the other account:
+# From the other account:
 response = coinbase.complete_request('501a3554f8182b2754000003')
 print(response['success'])
 # True
@@ -135,7 +135,7 @@ print(response['transactions'][0]['id'])
 # '5018f833f8182b129c00002f'
 ```
 
-Transactions will always have an `id` attribute which is the primary way to identity them through the Coinbase api.  They will also have a `hsh` (bitcoin hash) attribute once they've been broadcast to the network (usually within a few seconds).
+Transactions will always have an `id` attribute which is the primary way to identity them through the Coinbase API.  They will also have a `hsh` (bitcoin hash) attribute once they've been broadcast to the network (usually within a few seconds).
 
 ### Check bitcoin prices
 
@@ -225,7 +225,7 @@ print(coinbase.get_exchange_rate('btc', 'cad'))
 ### Create a new user
 
 ```python
-response = coinbase.create_user("newuser@example.com", "some password");
+response = coinbase.create_user("newuser@example.com", "some password")
 print(response['user']['email'])
 # 'newuser@example.com'
 print(response['user']['receive_address'])
@@ -239,7 +239,7 @@ A receive address is returned also in case you need to send the new user a payme
 This will return a list of contacts the user has previously sent to or received from. Useful for auto completion. By default, 30 contacts are returned at a time; use the `page` and `limit` parameters to adjust how pagination works.
 
 ```python
-response = coinbase.get_contacts("exa");
+response = coinbase.get_contacts("exa")
 print(', '.join(response['contacts']))
 # 'user1@example.com, user2@example.com'
 ```
