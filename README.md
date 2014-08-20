@@ -28,35 +28,35 @@ Then, execute the following command:
 
 Start by [enabling an API Key on your account](https://coinbase.com/settings/api).
 
-Next, create an instance of the client using the `Coinbase::withApiKey` method:
+Next, create an instance of the client using the `Coinbase.with_api_key` method:
 
-```php
-$coinbase = Coinbase::withApiKey($_ENV['COINBASE_API_KEY'], $_ENV['COINBASE_API_SECRET'])
+```python
+import coinbase
+
+coinbase = coinbase.Coinbase.with_api_key(coinbase_api_key, coinbase_api_secret)
 ```
 
-Notice here that we did not hard code the API key into our codebase, but set it in an environment variable instead.  This is just one example, but keeping your credentials separate from your code base is a good [security practice](https://coinbase.com/docs/api/overview#security).
+Keeping your credentials safe is essential to maintaining good security.  Read more about the recommended [security practices](https://coinbase.com/docs/api/overview#security) provided by Coinbase.
 
-Now you can call methods on `$coinbase` similar to the ones described in the [API reference](https://coinbase.com/api/doc).  For example:
+Now you can call methods on `coinbase` similar to the ones described in the [API reference](https://coinbase.com/api/doc).  For example:
 
-```php
-$balance = $coinbase->getBalance();
-echo "Balance is " . $balance . " BTC";
+```python
+balance = coinbase.get_balance()
+print('Balance is ' + balance + ' BTC')
 ```
 
-Currency amounts are returned as Strings. To avoid precision errors, use the [PHP arbitrary precision math functions ](http://www.php.net/manual/en/ref.bc.php) to work with money amounts.
-
-A working API key example is available in `example/ApiKeyExample.php`.
+Currency amounts are returned as strings.
 
 ## Examples
 
 ### Get user information
 
-```php
-$user = $coinbase->getUser()
-echo $user->name;
-// 'User One'
-echo $user->email;
-// 'user1@example.com'
+```python
+user = coinbase.get_user()
+print(user['name'])
+# 'User One'
+print(user['email'])
+# 'user1@example.com'
 ```
 
 ### Check your balance
