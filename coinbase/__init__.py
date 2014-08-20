@@ -9,7 +9,6 @@ from .CoinbaseOAuth import CoinbaseOAuth
 from .CoinbaseOAuthAuthentication import CoinbaseOAuthAuthentication
 from .CoinbaseRPC import CoinbaseRPC
 from .error import CoinbaseAPIException
-from .error import CoinbaseConnectionException
 from .error import CoinbaseException
 
 # ----- Public Classes --------------------------------------------------------
@@ -246,6 +245,19 @@ class Coinbase(object):
 
     def get_user(self):
         return self.get('/users')['users'][0]['user']
+
+
+    def order(self, name, type_, price, price_currency_iso='USD'):
+        params = {
+            'button': {
+                'name': name,
+                'type': type_,
+                'price_string': str(price),
+                'price_currency_iso': price_currency_iso
+            }
+        }
+
+        return self.post('/api/v1/orders', params)
 
 
     def post(self, path, params=None):
