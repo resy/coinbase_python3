@@ -2,6 +2,7 @@
 setup.py
 coinbase/CoinbaseAPIKeyAuthentication.py
 coinbase/CoinbaseAuthentication.py
+coinbase/CoinbaseOAuth.py
 coinbase/CoinbaseOAuthAuthentication.py
 coinbase/CoinbaseRPC.py
 coinbase/__init__.py
