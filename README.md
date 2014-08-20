@@ -6,7 +6,7 @@ This library supports both the [API key authentication method](https://coinbase.
 
 # About Resy
 
-Resy is a mobile restaurant reservations app in beta on iOS and Android.  The app is for people who love eating at great restaurants but hate hassling for reservations.
+[Resy](http://resy.com/) is a mobile restaurant reservations app in beta on [iOS](https://itunes.apple.com/us/app/resy/id866163372?ls=1&mt=8) and [Android](https://play.google.com/store/apps/details?id=com.resy.android).  The app is for people who love eating at great restaurants but hate hassling for reservations.
 
 The developers behind Resy are craftspeople that hold themselves and their peers to an extremely high but attainable standard for work product (code).  They ship constantly but never sacrifice code quality to meet a deadline.
 
