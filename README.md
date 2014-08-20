@@ -141,169 +141,158 @@ Transactions will always have an `id` attribute which is the primary way to iden
 
 Check the buy or sell price by passing a `quantity` of bitcoin that you'd like to buy or sell.  This price includes Coinbase's fee of 1% and the bank transfer fee of $0.15.
 
-```php
-echo $coinbase->getBuyPrice('1');
-// '125.31'
-echo $coinbase->getSellPrice('1');
-// '122.41'
+```python
+print(coinbase.get_buy_price(1)
+# '125.31'
+print(coinbase.get_sell_price(1)
+# '122.41'
 ```
 
 ### Buy or sell bitcoin
 
 Buying and selling bitcoin requires you to [link and verify a bank account](https://coinbase.com/payment_methods) through the web interface first.
 
-Then you can call `buy` or `sell` and pass a `$quantity` of bitcoin you want to buy.
+Then you can call `buy` or `sell` and pass a `quantity` of bitcoin you want to buy.
 
-On a buy, we'll debit your bank account and the bitcoin will arrive in your Coinbase account four business days later (this is shown as the `payout_date` below).  This is how long it takes for the bank transfer to complete and verify, although we're working on shortening this window. In some cases, we may not be able to guarantee a price, and buy requests will fail. In that case, set the second parameter (`$agreeBtcAmountVaries`) to true in order to purchase bitcoin at the future market price when your money arrives.
+On a buy, we'll debit your bank account and the bitcoin will arrive in your Coinbase account four business days later (this is shown as the `payout_date` below).  This is how long it takes for the bank transfer to complete and verify, although we're working on shortening this window. In some cases, we may not be able to guarantee a price, and buy requests will fail. In that case, set the second parameter (`agree_btc_amount_varies`) to true in order to purchase bitcoin at the future market price when your money arrives.
 
 On a sell we'll credit your bank account in a similar way and it will arrive within two business days.
 
-```php
-$response = $coinbase->buy('1.0');
-echo $response->transfer->code;
-// '6H7GYLXZ'
-echo $response->transfer->btc->amount;
-// '1.00000000'
-echo $response->transfer->total->amount;
-// '$17.95'
-echo $response->transfer->payout_date;
-// '2013-02-01T18:00:00-08:00' (ISO 8601 format - can be parsed with the strtotime() function)
+```python
+response = coinbase.buy(1.0)
+print(response['transfer']['code'])
+# '6H7GYLXZ'
+print(response['transfer'][['btc']['amount'])
+# '1.00000000'
+print(response['transfer']['total']['amount'])
+# '$17.95'
+print(response['transfer']['payout_date'])
+# '2013-02-01T18:00:00-08:00' (ISO 8601 format)
 ```
 
-```php
-$response = $coinbase->sell('1.0');
-echo $response->transfer->code;
-// 'RD2OC8AL'
-echo $response->transfer->btc->amount;
-// '1.00000000'
-echo $response->transfer->total->amount;
-// '$17.95'
-echo $response->transfer->payout_date;
-// '2013-02-01T18:00:00-08:00' (ISO 8601 format - can be parsed with the strtotime() function)
+```python
+response = coinbase.sell(1.0)
+print(response['transfer']['code'])
+# 'RD2OC8AL'
+print(response['transfer']['btc']['amount'])
+# '1.00000000'
+print(response['transfer']['total']['amount'])
+# '$17.95'
+print(response['transfer']['payout_date'])
+# '2013-02-01T18:00:00-08:00' (ISO 8601 format)
 ```
 
 ### Create a payment button
 
 This will create the code for a payment button (and modal window) that you can use to accept bitcoin on your website.  You can read [more about payment buttons here and try a demo](https://coinbase.com/docs/merchant_tools/payment_buttons).
 
-The method signature is `public function createButton($name, $price, $currency, $custom=null, $options=array())`.  The `custom` param will get passed through in [callbacks](https://coinbase.com/docs/merchant_tools/callbacks) to your site.  The list of valid `options` [are described here](https://coinbase.com/api/doc/1.0/buttons/create.html).
+The method signature is `def create_button(self, name, price, currency, custom=None, options=None)`.  The `custom` parameter will get passed through in [callbacks](https://coinbase.com/docs/merchant_tools/callbacks) to your site.  The list of valid `options` [are described here](https://coinbase.com/api/doc/1.0/buttons/create.html).
 
-```php
-$response = $coinbase->createButton("Your Order #1234", "42.95", "EUR", "my custom tracking code for this order", array(
-            "description" => "1 widget at €42.95"
-        ));
-echo $response->button->code;
-// '93865b9cae83706ae59220c013bc0afd'
-echo $response->embedHtml;
-// '<div class=\"coinbase-button\" data-code=\"93865b9cae83706ae59220c013bc0afd\"></div><script src=\"https://coinbase.com/assets/button.js\" type=\"text/javascript\"></script>'
+```python
+response = \
+    coinbase.create_button(
+        "Your Order #1234",
+        "42.95",
+        "EUR",
+        "my custom tracking code for this order",
+        {"description": "1 widget at €42.95"})
+print(response['button']['code'])
+# '93865b9cae83706ae59220c013bc0afd'
+print(response['embed_html'])
+# '<div class=\"coinbase-button\" data-code=\"93865b9cae83706ae59220c013bc0afd\"></div><script src=\"https://coinbase.com/assets/button.js\" type=\"text/javascript\"></script>'
 ```
 
 ### Exchange rates and currency utilties
 
-You can fetch a list of all supported currencies and ISO codes with the `getCurrencies()` method.
+You can fetch a list of all supported currencies and ISO codes with the `get_currencies()` method.
 
-```php
-$currencies = $coinbase->getCurrencies();
-echo $currencies[0]->name;
-// 'Afghan Afghani (AFN)'
+```python
+currencies = coinbase.get_currencies()
+print(currencies[0]['name'])
+# 'Afghan Afghani (AFN)'
 ```
 
-`getExchangeRate()` will return a list of exchange rates. Pass two parameters to get a single exchange rate.
+`get_exchange_rate()` will return a list of exchange rates. Pass two parameters to get a single exchange rate.
 
-```php
-$rates = $coinbase->getExchangeRate();
-echo $rates->btc_to_cad;
-// '117.13892'
-echo $coinbase->getExchangeRate('btc', 'cad');
-// '117.13892'
+```python
+rates = coinbase.get_exchange_rate()
+print(rates['btc_to_cad'])
+# '117.13892'
+print(coinbase.get_exchange_rate('btc', 'cad'))
+# '117.13892'
 ```
 
 ### Create a new user
 
-```php
-$response = $coinbase->createUser("newuser@example.com", "some password");
-echo $response->user->email;
-// 'newuser@example.com'
-echo $response->user->receive_address;
-// 'mpJKwdmJKYjiyfNo26eRp4j6qGwuUUnw9x'
+```python
+response = coinbase.create_user("newuser@example.com", "some password");
+print(response['user']['email'])
+# 'newuser@example.com'
+print(response['user']['receive_address'])
+# 'mpJKwdmJKYjiyfNo26eRp4j6qGwuUUnw9x'
 ```
 
 A receive address is returned also in case you need to send the new user a payment right away.
 
 ### Get autocomplete contacts
 
-This will return a list of contacts the user has previously sent to or received from. Useful for auto completion. By default, 30 contacts are returned at a time; use the `$page` and `$limit` parameters to adjust how pagination works.
+This will return a list of contacts the user has previously sent to or received from. Useful for auto completion. By default, 30 contacts are returned at a time; use the `page` and `limit` parameters to adjust how pagination works.
 
-```php
-$response = $coinbase->getContacts("exa");
-echo implode(', ', $response->contacts);
-// 'user1@example.com, user2@example.com'
+```python
+response = coinbase.get_contacts("exa");
+print(', '.join(response['contacts']))
+# 'user1@example.com, user2@example.com'
 ```
 
 ## Adding new methods
 
-You can see a [list of method calls here](https://github.com/coinbase/coinbase-php/blob/master/lib/Coinbase/Coinbase.php) and how they are implemented.  They are a wrapper around the [Coinbase JSON API](https://coinbase.com/api/doc).
+You can see a [list of method calls here](https://github.com/resy/coinbase_python3/blob/master/coinbase/__init__.py) and how they are implemented.  They are a wrapper around the [Coinbase JSON API](https://coinbase.com/api/doc).
 
-If there are any methods listed in the [API Reference](https://coinbase.com/api/doc) that don't have an explicit function name in the library, you can also call `get`, `post`, `put`, or `delete` with a `$path` and optional `$params` array for a quick implementation.  The raw JSON object will be returned. For example:
+If there are any methods listed in the [API Reference](https://coinbase.com/api/doc) that don't have an explicit function name in the library, you can also call `get`, `post`, `put`, or `delete` with a `path` and optional `params` array for a quick implementation.  The raw JSON object will be returned. For example:
 
-```php
-var_dump($coinbase->get('/account/balance'));
-// object(stdClass)#4 (2) {
-//   ["amount"]=>
-//   string(10) "0.56902981"
-//   ["currency"]=>
-//   string(3) "BTC"
-// }
+```python
+print(coinbase.get('/account/balance'))
+# {
+#   'amount': "0.56902981",
+#   'current': "BTC"
+# }
 ```
 
 Or feel free to add a new wrapper method and submit a pull request.
 
 ## OAuth Authentication
 
-To authenticate with OAuth, first create an OAuth application at https://coinbase.com/oauth/applications.
-When a user wishes to connect their Coinbase account, redirect them to a URL created with `Coinbase_OAuth::createAuthorizeUrl`:
+To authenticate with OAuth, first create an OAuth application at https://coinbase.com/oauth/applications.  When a user wishes to connect their Coinbase account, redirect them to a URL created with `CoinbaseOAuth.create_authorize_url()`:
 
-```php
-$coinbaseOauth = new Coinbase_OAuth($_CLIENT_ID, $_CLIENT_SECRET, $_REDIRECT_URL);
-header("Location: " . $coinbaseOauth->createAuthorizeUrl("all"));
+```python
+coinbase_oauth = CoinbaseOAuth(client_id, client_secret, redirect_url)
 ```
 
-After the user has authorized your application, they will be redirected back to the redirect URL specified above. A `code` parameter will be included - pass this into `getTokens` to receive a set of tokens:
+You can then redirect using a "Location" header and the result from this call:
 
-```php
-$tokens = $coinbaseOauth->getTokens($_GET['code']);
+```python
+coinbase_oauth.create_authorize_url('all')
+```
+
+After the user has authorized your application, they will be redirected back to the redirect URL specified above. A `code` parameter will be included - pass this into `get_tokens()` to receive a set of tokens:
+
+```python
+tokens = coinbase_oauth.get_tokens(code)
 ```
 
 Store these tokens safely, and use them to make Coinbase API requests in the future. For example:
 
-```php
-$coinbase = Coinbase::withOauth($coinbaseOauth, $tokens);
-$coinbase->getBalance();
+```python
+coinbase = coinbase.Coinbase.with_oauth(access_token, refresh_token)
+coinbase.get_balance()
 ```
-
-A full example implementation is available in the `example` directory.
 
 ## Simple API Key Authentication
 
-If you're still using the deprecated Simple API keys, create a Coinbase object like so:
-
-```php
-$coinbase = Coinbase::withSimpleApiKey($simple_api);
-```
+This mechanism is deprecated and was not included in this library.  If it is essential for your implementation, please contact us.
 
 ## Security notes
 
 If someone gains access to your API Key they will have complete control of your Coinbase account.  This includes the abillity to send all of your bitcoins elsewhere.
 
 For this reason, API access is disabled on all Coinbase accounts by default.  If you decide to enable API key access you should take precautions to store your API key securely in your application.  How to do this is application specific, but it's something you should [research](http://programmers.stackexchange.com/questions/65601/is-it-smart-to-store-application-keys-ids-etc-directly-inside-an-application) if you have never done this before.
-
-## Testing
-
-If you'd like to contribute code or modify this library, you can run the test suite by executing `/path/to/coinbase-php/test/Coinbase.php` in a web browser or on the command line with `php`.
-
-First, init the submodule from the root of the repo using these commands:
-
-    git submodule init
-    git submodule sync
-    git submodule update
-
