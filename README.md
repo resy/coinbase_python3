@@ -61,14 +61,14 @@ print(user['email'])
 
 ### Check your balance
 
-```php
-echo $coinbase->getBalance() . " BTC";
+```python
+print(coinvase.get_balance() . ' BTC')
 // '200.123 BTC'
 ```
 
 ### Send bitcoin
 
-`public function sendMoney($to, $amount, $notes=null, $userFee=null, $amountCurrency=null)`
+`def send_money(self, to, amount, notes=None, user_fee=None, amount_currency=None)`
 
 ```php
 $response = $coinbase->sendMoney("user@example.com", "2");
