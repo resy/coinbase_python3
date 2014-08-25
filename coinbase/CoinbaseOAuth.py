@@ -53,7 +53,6 @@ class CoinbaseOAuth(object):
         else:
             params['code'] = code
 
-
         request = \
             requests.post(
                 'https://coinbase.com/oauth/token',

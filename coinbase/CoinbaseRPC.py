@@ -31,14 +31,10 @@ class CoinbaseRPC(object):
     def request(self, method, url, params=None):
         url = self.COINBASE_API + url
 
-        query_string = ''
-        if params is not None and len(params) > 0:
-            query_string = urllib.parse.urlencode(params)
-
         method = method.lower()
-        if (method == 'get' or method == 'delete') and \
-           len(query_string) > 0:
-            url += '?' + query_string
+        if method == 'get' or method == 'delete':
+            if params is not None:
+                url += '?' + urllib.parse.urlencode(params)
 
         headers = {
             'User-Agent': 'CoinbasePython3/v1'
@@ -50,29 +46,33 @@ class CoinbaseRPC(object):
             headers['Authorization'] = 'Bearer ' + auth['access_token']
         elif isinstance(self.__authentication, CoinbaseAPIKeyAuthentication):
             nonce = int(time.time() * 1e6)
+            message = str(nonce) + url
 
-            data_to_hash = str(nonce) + url
-            if (method == 'post' or method == 'put') and \
-               len(query_string) > 0:
-                data_to_hash += query_string
+            if method == 'post' or method == 'put':
+                headers['Content-Type'] = 'application/json'
+
+                if params is not None:
+                    params = json.dumps(params)
+                    message += params
 
             signature = \
                 hmac.new(
                     auth['api_secret'].encode(),
-                    data_to_hash.encode(),
+                    message.encode(),
                     hashlib.sha256) \
                 .hexdigest()
 
             headers['ACCESS_KEY'] = auth['api_key']
             headers['ACCESS_SIGNATURE'] = signature
             headers['ACCESS_NONCE'] = nonce
+            headers['Accept'] = 'application/json'
         else:
             raise CoinbaseAPIException('Invalid authentication mechanism')
 
         if method == 'get':
             request = requests.get(url, headers=headers)
         elif method == 'delete':
-            request = requests.delete(url, params=params, headers=headers)
+            request = requests.delete(url, headers=headers)
         elif method == 'post':
             request = requests.post(url, data=params, headers=headers)
         elif method == 'put':
