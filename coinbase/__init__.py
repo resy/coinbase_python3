@@ -22,7 +22,8 @@ class Coinbase(object):
     def with_api_key(key, secret, nonce=None):
         return Coinbase(
                 CoinbaseAPIKeyAuthentication(
-                    key, secret, nonce))
+                    key, secret),
+                nonce)
 
 
     @staticmethod
