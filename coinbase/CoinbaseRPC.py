@@ -35,8 +35,11 @@ class CoinbaseRPC(object):
         if method == 'get' or method == 'delete':
             if params is not None:
                 url += '?' + urllib.parse.urlencode(params)
+        else:
+            params = json.dumps(params)
 
         headers = {
+            'Content-Type': 'application/json',
             'User-Agent': 'CoinbasePython3/v1'
         }
 
@@ -49,10 +52,7 @@ class CoinbaseRPC(object):
             message = str(nonce) + url
 
             if method == 'post' or method == 'put':
-                headers['Content-Type'] = 'application/json'
-
                 if params is not None:
-                    params = json.dumps(params)
                     message += params
 
             signature = \

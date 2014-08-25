@@ -314,7 +314,7 @@ class Coinbase(object):
 
         if amount_currency is not None:
             params['transaction']['amount_string'] = str(amount)
-            params['transaction']['amount_current_iso'] = amount_currency
+            params['transaction']['amount_currency_iso'] = amount_currency
         else:
             params['transaction']['amount'] = str(amount)
 
