@@ -257,7 +257,7 @@ class Coinbase(object):
             }
         }
 
-        return self.post('/api/v1/orders', params)
+        return self.post('/orders', params)
 
 
     def post(self, path, params=None):
