@@ -21,6 +21,6 @@ class CoinbaseOAuthAuthentication(CoinbaseAuthentication):
 
     def get_data(self):
         return {
-            'access_token': self.api_key,
-            'refresh_token': self.api_secret
+            'access_token': self.access_token,
+            'refresh_token': self.refresh_token
         }
