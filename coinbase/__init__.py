@@ -19,10 +19,10 @@ class Coinbase(object):
     '''
 
     @staticmethod
-    def with_api_key(key, secret):
+    def with_api_key(key, secret, nonce=None):
         return Coinbase(
                 CoinbaseAPIKeyAuthentication(
-                    key, secret))
+                    key, secret, nonce))
 
 
     @staticmethod
@@ -32,9 +32,9 @@ class Coinbase(object):
                     access_token, refresh_token))
 
 
-    def __init__(self, authentication):
+    def __init__(self, authentication, nonce=None):
         self.__authentication = authentication
-        self.__rpc = CoinbaseRPC(self.__authentication)
+        self.__rpc = CoinbaseRPC(self.__authentication, nonce)
 
 
     def buy(self, amount, agree_btc_amount_varies=False):

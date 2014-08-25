@@ -24,8 +24,9 @@ class CoinbaseRPC(object):
 
     COINBASE_API = 'https://coinbase.com/api/v1'
 
-    def __init__(self, authentication):
+    def __init__(self, authentication, nonce=None):
         self.__authentication = authentication
+        self.__nonce = None
 
 
     def request(self, method, url, params=None):
@@ -48,8 +49,9 @@ class CoinbaseRPC(object):
         if isinstance(self.__authentication, CoinbaseOAuthAuthentication):
             headers['Authorization'] = 'Bearer ' + auth['access_token']
         elif isinstance(self.__authentication, CoinbaseAPIKeyAuthentication):
-            nonce = int(time.time() * 1e6)
-            message = str(nonce) + url
+            if self.__nonce is None:
+                self.__nonce = int(time.time() * 1e6)
+            message = str(self.__nonce) + url
 
             if method == 'post' or method == 'put':
                 if params is not None:
@@ -64,7 +66,7 @@ class CoinbaseRPC(object):
 
             headers['ACCESS_KEY'] = auth['api_key']
             headers['ACCESS_SIGNATURE'] = signature
-            headers['ACCESS_NONCE'] = nonce
+            headers['ACCESS_NONCE'] = self.__nonce
             headers['Accept'] = 'application/json'
         else:
             raise CoinbaseAPIException('Invalid authentication mechanism')
