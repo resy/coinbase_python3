@@ -62,7 +62,7 @@ print(user['email'])
 ### Check your balance
 
 ```python
-print(coinvase.get_balance() . ' BTC')
+print(coinbase.get_balance() . ' BTC')
 # '200.123 BTC'
 ```
 
