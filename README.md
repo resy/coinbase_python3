@@ -111,7 +111,7 @@ response = coinbase.resend_request('501a3554f8182b2754000003)
 print(response['success'])
 # True
 
-respoinse = coinbase.cancel_request('501a3554f8182b2754000003')
+response = coinbase.cancel_request('501a3554f8182b2754000003')
 print(response['success'])
 # True
 
