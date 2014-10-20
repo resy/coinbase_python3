@@ -66,7 +66,7 @@ class Coinbase(object):
             params['custom'] = custom
 
         if options is not None:
-            for key, value in operation.items():
+            for key, value in options.items():
                 params[key] = value
 
         return self.create_button_with_options(params)
