@@ -51,6 +51,8 @@ class CoinbaseRPC(object):
         elif isinstance(self.__authentication, CoinbaseAPIKeyAuthentication):
             if self.__nonce is None:
                 self.__nonce = int(time.time() * 1e6)
+            else:
+                self.__nonce += 1
             message = str(self.__nonce) + url
 
             if method == 'post' or method == 'put':
