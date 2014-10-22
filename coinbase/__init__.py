@@ -82,7 +82,7 @@ class Coinbase(object):
             'button': response['button'],
             'embed_html': '<div class="coinbase-button" data-code="'
                           + response['button']['code']
-                          + '></div><script src="https://coinbase.com/assets/'
+                          + '"></div><script src="https://coinbase.com/assets/'
                           + 'button.js" type="text/javascript"></script>',
             'success': True
         }
