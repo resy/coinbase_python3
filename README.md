@@ -14,6 +14,12 @@ The Resy application runs at AWS using python3, uWSGI, nginx, MySQL and [tinyAPI
 
 If you're interested in working with us, please email jobs@resy.com.
 
+## Contributors
+
+Special thanks to the following developers for their contributions to this code:
+
+[matthewbentley](https://github.com/matthewbentley)
+
 ## Installation
 
 Obtain the latest version of the Coinbase Python3 library with:
