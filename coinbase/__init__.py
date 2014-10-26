@@ -66,7 +66,7 @@ class Coinbase(object):
             params['custom'] = custom
 
         if options is not None:
-            for key, value in operation.items():
+            for key, value in options.items():
                 params[key] = value
 
         return self.create_button_with_options(params)
@@ -82,7 +82,7 @@ class Coinbase(object):
             'button': response['button'],
             'embed_html': '<div class="coinbase-button" data-code="'
                           + response['button']['code']
-                          + '></div><script src="https://coinbase.com/assets/'
+                          + '"></div><script src="https://coinbase.com/assets/'
                           + 'button.js" type="text/javascript"></script>',
             'success': True
         }
