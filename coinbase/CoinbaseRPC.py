@@ -26,7 +26,7 @@ class CoinbaseRPC(object):
 
     def __init__(self, authentication, nonce=None):
         self.__authentication = authentication
-        self.__nonce = None
+        self.__nonce = nonce
 
 
     def request(self, method, url, params=None):
