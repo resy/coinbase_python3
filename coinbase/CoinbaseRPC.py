@@ -36,7 +36,7 @@ class CoinbaseRPC(object):
         expire = now + timedelta(minutes=15)
         expire_int = int(expire.timestamp())
 
-        url = self.COINBASE_API + url + "?expire=" + expire_int
+        url = self.COINBASE_API + url + "?expire=" + str(expire_int)
 
         method = method.lower()
         if method == 'get' or method == 'delete':
