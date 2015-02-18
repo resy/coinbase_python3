@@ -15,6 +15,8 @@ import requests
 import time
 import urllib.parse
 
+from datetime import datetime, timedelta
+
 # ----- Public Classes --------------------------------------------------------
 
 class CoinbaseRPC(object):
@@ -30,12 +32,16 @@ class CoinbaseRPC(object):
 
 
     def request(self, method, url, params=None):
-        url = self.COINBASE_API + url
+        now = datetime.now()
+        expire = now + timedelta(minutes=15)
+        expire_int = int(expire.timestamp())
+
+        url = self.COINBASE_API + url + "?expire=" + expire_int
 
         method = method.lower()
         if method == 'get' or method == 'delete':
             if params is not None:
-                url += '?' + urllib.parse.urlencode(params)
+                url += '&' + urllib.parse.urlencode(params)
         else:
             params = json.dumps(params)
 
@@ -68,7 +74,7 @@ class CoinbaseRPC(object):
 
             headers['ACCESS_KEY'] = auth['api_key']
             headers['ACCESS_SIGNATURE'] = signature
-            headers['ACCESS_NONCE'] = self.__nonce
+#            headers['ACCESS_NONCE'] = self.__nonce
             headers['Accept'] = 'application/json'
         else:
             raise CoinbaseAPIException('Invalid authentication mechanism')
