@@ -59,7 +59,7 @@ class CoinbaseRPC(object):
                 self.__nonce = int(time.time() * 1e6)
             else:
                 self.__nonce += 1
-            message = str(self.__nonce) + url
+            message = url
 
             if method == 'post' or method == 'put':
                 if params is not None:
