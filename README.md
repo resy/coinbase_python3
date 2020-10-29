@@ -113,7 +113,7 @@ print(response['transaction']['request'])
 print(response['transaction']['id'])
 # '501a3554f8182b2754000003'
 
-response = coinbase.resend_request('501a3554f8182b2754000003)
+response = coinbase.resend_request('501a3554f8182b2754000003')
 print(response['success'])
 # True
 
@@ -201,7 +201,7 @@ response = \
         "42.95",
         "EUR",
         "my custom tracking code for this order",
-        {"description": "1 widget at €42.95"})
+        {"description": "1 widget at â‚¬42.95"})
 print(response['button']['code'])
 # '93865b9cae83706ae59220c013bc0afd'
 print(response['embed_html'])
