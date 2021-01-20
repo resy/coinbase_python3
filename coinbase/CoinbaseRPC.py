@@ -72,13 +72,13 @@ class CoinbaseRPC(object):
             raise CoinbaseAPIException('Invalid authentication mechanism')
 
         if method == 'get':
-            request = requests.get(url, headers=headers)
+            request = requests.get(url, headers=str(headers))
         elif method == 'delete':
-            request = requests.delete(url, headers=headers)
+            request = requests.delete(url, headers=str(headers))
         elif method == 'post':
-            request = requests.post(url, data=params, headers=headers)
+            request = requests.post(url, data=params, headers=str(headers))
         elif method == 'put':
-            request = requests.put(url, data=params, headers=headers)
+            request = requests.put(url, data=params, headers=str(headers))
 
         if request.status_code != 200:
             raise CoinbaseAPIException(
