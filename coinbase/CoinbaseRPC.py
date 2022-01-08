@@ -66,7 +66,7 @@ class CoinbaseRPC(object):
 
             headers['ACCESS_KEY'] = auth['api_key']
             headers['ACCESS_SIGNATURE'] = signature
-            headers['ACCESS_NONCE'] = self.__nonce
+            headers['ACCESS_NONCE'] = str(self.__nonce)
             headers['Accept'] = 'application/json'
         else:
             raise CoinbaseAPIException('Invalid authentication mechanism')
